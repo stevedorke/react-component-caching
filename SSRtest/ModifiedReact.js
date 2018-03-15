@@ -2664,7 +2664,7 @@ if (process.env.NODE_ENV !== "production") {
     }
 
     var ReactDOMServerRenderer = (function() {
-      function ReactDOMServerRenderer(children, makeStaticMarkup) {
+      function ReactDOMServerRenderer(children, makeStaticMarkup, cache) {
         _classCallCheck(this, ReactDOMServerRenderer);
 
         var flatChildren = flattenTopLevelChildren(children);
@@ -2745,6 +2745,7 @@ if (process.env.NODE_ENV !== "production") {
             resetCurrentDebugStack();
           }
         }
+
         if (!isStreaming) {
           for (let component in start) {
             let tagStack = [];
@@ -2771,8 +2772,7 @@ if (process.env.NODE_ENV !== "production") {
           }
         } else {
           for (let component in streamingStart) {
-            //
-            //
+            console.log(component, streamingStart);
             let tagStack = [];
             let tagStart;
             let tagEnd;
@@ -2783,7 +2783,6 @@ if (process.env.NODE_ENV !== "production") {
                 tagStart =
                   out[tagEnd] === "<" ? tagEnd : out.indexOf("<", tagEnd);
               tagEnd = out.indexOf(">", tagStart) + 1;
-              //
               // Skip stack logic for void/self-closing elements
               if (out[tagEnd - 2] !== "/") {
                 // Push opening tags onto stack; pop closing tags off of stack
@@ -2792,16 +2791,8 @@ if (process.env.NODE_ENV !== "production") {
                 else tagStack.pop();
               }
             } while (tagStack.length !== 0);
-
-            // cache component by slicing 'out'
-            console.log(tagEnd);
-            // streamingStart[streamingStart[component]] = tagEnd;
-            // console.log("streamingStart", streamingStart);
-
-            // cache.storage.set(component, out.slice(start[component], tagEnd));
           }
         }
-
         return out;
       };
 

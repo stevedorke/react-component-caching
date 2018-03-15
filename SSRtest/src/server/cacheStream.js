@@ -16,7 +16,6 @@ const createCacheStream = (key, cache, streamingStart) => {
     flush(cb) {
       // We concatenate all the buffered chunks of HTML to get the full HTML
       // then cache it at "key"
-      console.log("inside cacheStream: ", streamingStart);
 
       // console.log(cache);
       // console.log(bufferedChunks.join());
