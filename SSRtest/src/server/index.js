@@ -10,13 +10,13 @@ import createCacheStream from "./cacheStream";
 
 // can pass in max-size, otherwise defaults to 1 million
 const cache = new ReactCC.ComponentCache();
-const streamingStart = {};
+const streamingStart = { sliceStartCount: 65, finalSliceStart: 0 };
 
 /**
  * @param clientStats Parameter passed by hot server middleware
  */
 export default ({ clientStats }) => async (req, res) => {
-  const cacheStream = createCacheStream("test", cache, streamingStart);
+  const cacheStream = createCacheStream(cache, streamingStart);
   cacheStream.pipe(res);
   cacheStream.write(
     '<html><head><title>Page</title></head><body><div id="react-root">'

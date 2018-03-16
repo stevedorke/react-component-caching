@@ -1,7 +1,7 @@
 import { Transform } from "stream";
 import { create } from "domain";
 
-const createCacheStream = (key, cache, streamingStart) => {
+const createCacheStream = (cache, streamingStart) => {
   const bufferedChunks = [];
   return new Transform({
     // transform() is called with each chunk of data
@@ -20,6 +20,8 @@ const createCacheStream = (key, cache, streamingStart) => {
       // console.log(cache);
       // console.log(bufferedChunks.join());
       // cache.set(key, Buffer.concat(bufferedChunks));
+      // console.log("final", streamingStart.finalSliceStart);
+      console.log("to be saved:", bufferedChunks.join().slice(112, 170));
       cb();
     }
   });

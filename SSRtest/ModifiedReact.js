@@ -2729,7 +2729,10 @@ if (process.env.NODE_ENV !== "production") {
             const cacheKey = child.type.name + JSON.stringify(child.props);
             if (!cache.storage.get(cacheKey)) {
               if (isStreaming) {
-                streamingStart[cacheKey] = out.length;
+                // streamingStart[cacheKey] = out.length;
+                streamingStart.finalSliceStart =
+                  streamingStart.sliceStartCount + out.length;
+                console.log("finalcount", streamingStart.finalSliceStart);
               } else {
                 start[cacheKey] = out.length;
               }
@@ -2771,28 +2774,12 @@ if (process.env.NODE_ENV !== "production") {
             cache.storage.set(component, out.slice(start[component], tagEnd));
           }
         } else {
-          for (let component in streamingStart) {
-            console.log(component, streamingStart);
-            let tagStack = [];
-            let tagStart;
-            let tagEnd;
-
-            do {
-              if (!tagStart) tagStart = streamingStart[component];
-              else
-                tagStart =
-                  out[tagEnd] === "<" ? tagEnd : out.indexOf("<", tagEnd);
-              tagEnd = out.indexOf(">", tagStart) + 1;
-              // Skip stack logic for void/self-closing elements
-              if (out[tagEnd - 2] !== "/") {
-                // Push opening tags onto stack; pop closing tags off of stack
-                if (out[tagStart + 1] !== "/")
-                  tagStack.push(out.slice(tagStart, tagEnd));
-                else tagStack.pop();
-              }
-            } while (tagStack.length !== 0);
-          }
+          // console.log(out.length, streamingStart);
+          streamingStart.sliceStartCount += out.length;
+          console.log("rolling count", streamingStart["sliceStartCount"]);
         }
+
+        // console.log("this is a chunk of out: ", out);
         return out;
       };
 
@@ -3250,6 +3237,7 @@ if (process.env.NODE_ENV !== "production") {
       }
 
       ReactMarkupReadableStream.prototype._read = function _read(size) {
+        size = 1024;
         try {
           this.push(
             this.partialRenderer.read(
