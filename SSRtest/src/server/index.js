@@ -10,7 +10,15 @@ import createCacheStream from "./cacheStream";
 
 // can pass in max-size, otherwise defaults to 1 million
 const cache = new ReactCC.ComponentCache();
-const streamingStart = { sliceStartCount: 65, finalSliceStart: 0 };
+
+const htmlStart =
+  '<html><head><title>Page</title></head><body><div id="react-root">';
+const htmlEnd = "</div></body></html>";
+
+const streamingStart = {
+  sliceStartCount: htmlStart.length,
+  finalSliceStart: 0
+};
 
 /**
  * @param clientStats Parameter passed by hot server middleware
@@ -18,14 +26,12 @@ const streamingStart = { sliceStartCount: 65, finalSliceStart: 0 };
 export default ({ clientStats }) => async (req, res) => {
   const cacheStream = createCacheStream(cache, streamingStart);
   cacheStream.pipe(res);
-  cacheStream.write(
-    '<html><head><title>Page</title></head><body><div id="react-root">'
-  );
+  cacheStream.write(htmlStart);
 
   const stream = ReactCC.renderToNodeStream(<App />, cache, streamingStart);
   stream.pipe(cacheStream, { end: false });
   stream.on("end", () => {
-    cacheStream.end("</div></body></html>");
+    cacheStream.end(htmlEnd);
   });
 
   const chunkNames = flushChunkNames();
