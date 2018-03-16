@@ -17,7 +17,7 @@ const htmlEnd = "</div></body></html>";
 
 const streamingStart = {
   sliceStartCount: htmlStart.length,
-  finalSliceStart: 0
+  finalSliceStarts: []
 };
 
 /**
@@ -30,7 +30,14 @@ export default ({ clientStats }) => async (req, res) => {
 
   const stream = ReactCC.renderToNodeStream(<App />, cache, streamingStart);
   stream.pipe(cacheStream, { end: false });
+  stream.on("pre-finish", () => {
+    console.log("pre-finish");
+  });
+  stream.on("finish", () => {
+    console.log("finish");
+  });
   stream.on("end", () => {
+    console.log("end");
     cacheStream.end(htmlEnd);
   });
 

@@ -2729,10 +2729,7 @@ if (process.env.NODE_ENV !== "production") {
             const cacheKey = child.type.name + JSON.stringify(child.props);
             if (!cache.storage.get(cacheKey)) {
               if (isStreaming) {
-                // streamingStart[cacheKey] = out.length;
-                streamingStart.finalSliceStart =
-                  streamingStart.sliceStartCount + out.length;
-                console.log("finalcount", streamingStart.finalSliceStart);
+                streamingStart.finalSliceStarts.push(streamingStart.sliceStartCount + out.length)
               } else {
                 start[cacheKey] = out.length;
               }
@@ -2774,12 +2771,9 @@ if (process.env.NODE_ENV !== "production") {
             cache.storage.set(component, out.slice(start[component], tagEnd));
           }
         } else {
-          // console.log(out.length, streamingStart);
           streamingStart.sliceStartCount += out.length;
-          console.log("rolling count", streamingStart["sliceStartCount"]);
         }
 
-        // console.log("this is a chunk of out: ", out);
         return out;
       };
 
